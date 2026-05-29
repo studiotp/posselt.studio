@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SmartLink from '../components/ui/SmartLink.astro';
+---
+
+<BaseLayout title="Page Not Found — posselt.studio" noindex={true}>
+  <div class="error-page">
+    <h1>404 — Page Not Found</h1>
+    <p>The page you are looking for does not exist.</p>
+    <SmartLink href="/">Go back home</SmartLink>
+  </div>
+</BaseLayout>
+
+<style>
+  .error-page {
+    max-width: 600px;
+    margin: 10vh auto;
+    text-align: center;
+    padding: 2rem;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>

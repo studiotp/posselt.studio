@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://studiotp.github.io/posselt.studio/sitemap-index.xml

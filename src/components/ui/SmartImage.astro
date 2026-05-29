@@ -1,0 +1,40 @@
+---
+export interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  decoding?: 'async' | 'sync' | 'auto';
+}
+
+const { src, alt, width, height, class: className, loading, decoding } = Astro.props;
+
+function resolveSrc(src: string): string {
+  // Pass through external URLs unchanged
+  if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:')) {
+    return src;
+  }
+
+  const base = import.meta.env.BASE_URL;
+
+  // Already includes base? Pass through
+  if (src.startsWith(base) && base !== '/') {
+    return src;
+  }
+
+  // Normalize: ensure src starts with /
+  const normalizedSrc = src.startsWith('/') ? src : '/' + src;
+
+  if (base.endsWith('/')) {
+    return base + normalizedSrc.slice(1);
+  }
+
+  return base + normalizedSrc;
+}
+
+const resolved = resolveSrc(src);
+---
+
+<img src={resolved} alt={alt} width={width} height={height} class={className} loading={loading} decoding={decoding} />

@@ -1,0 +1,47 @@
+---
+import SmartLink from '../ui/SmartLink.astro';
+---
+
+<header>
+  <nav aria-label="Main navigation">
+    <SmartLink href="/" class="logo">posselt.studio</SmartLink>
+    <ul>
+      <li><SmartLink href="/">Home</SmartLink></li>
+      <li><SmartLink href="/about/">About</SmartLink></li>
+    </ul>
+  </nav>
+</header>
+
+<style>
+  header {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .logo {
+    font-weight: bold;
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  ul {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
