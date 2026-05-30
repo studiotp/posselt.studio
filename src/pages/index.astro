@@ -1,15 +1,73 @@
 ---
+import { getCollection } from 'astro:content';
 import PageLayout from '../layouts/PageLayout.astro';
-import data from '../data/home.json';
+import ProjectSlider from '../components/projects/ProjectSlider.astro';
+
+const allProjects = await getCollection('projects');
+const activeProjects = allProjects
+  .filter((p) => p.data.status === 'active')
+  .sort((a, b) => a.id.localeCompare(b.id));
 ---
 
 <PageLayout
-  title={data.title}
-  description={data.description}
-  themeClass={data.themeClass}
-  bodyClass={data.bodyClass}
+  title="STP - Studio Torsten Posselt"
+  description="A collection of design projects by Studio Torsten Posselt — from artworks, branding, packaging and editorial design to immersive spatial installations."
+  themeClass="bg-white"
+  bodyClass="home"
 >
   <ul class="projects">
-    <!-- Projects content out of scope for now -->
+    {activeProjects.map((project, index) => (
+      <ProjectSlider project={project} index={index} />
+    ))}
   </ul>
+
+  <script>
+    import { SliderHandler } from '../scripts/slider.js';
+    import { VideoHandler } from '../scripts/video.js';
+    import LazyLoad from 'vanilla-lazyload';
+
+    // Initialize sliders
+    SliderHandler.init();
+
+    // Initialize video controls
+    VideoHandler.init();
+
+    // Initialize lazy loading
+    const lazyContent = new LazyLoad({
+      elements_selector: 'img.lazy, video.lazy',
+      callback_loaded: function (el) {
+        // Find the parent slider and recalculate buttons
+        const sliderEl = el.closest('.slider');
+        if (sliderEl && window.sliders) {
+          const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
+          if (window.sliders[projectIndex]) {
+            window.sliders[projectIndex].calculateButtons();
+            window.sliders[projectIndex].playPauseVideo();
+          }
+        }
+      }
+    });
+
+    // Video intersection observer (pauses videos when not in viewport)
+    const videos = document.querySelectorAll('video');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.intersectionRatio < 0.8) {
+            (entry.target as HTMLVideoElement).pause();
+          } else {
+            const video = entry.target as HTMLVideoElement;
+            const autoplay = video.getAttribute('data-autoplay');
+            const isActive = video.closest('.slider__slide')?.classList.contains('slider__slide--active');
+            if (autoplay === 'true' && isActive) {
+              video.play();
+            }
+          }
+        });
+      },
+      { threshold: 0.8 }
+    );
+
+    videos.forEach((video) => observer.observe(video));
+  </script>
 </PageLayout>

@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { title, client, year, description, url, slides } = project.data;
+const slug = project.id;
+
+function resolveAssetPath(src: string): string {
+  if (src.startsWith('http') || src.startsWith('/')) {
+    return src;
+  }
+  return `/projects/${slug}/${src}`;
+}
+---
+
+<PageLayout
+  title={`${title} — Studio Torsten Posselt`}
+  description={description || `${title} by Studio Torsten Posselt.`}
+  themeClass="bg-white"
+  bodyClass="page-project"
+>
+  <div class="bg-white px-2 lg:px-3 page">
+    <div class="lg:pl-4">
+      <div class="flex justify-end mb-15 pt-20 md:py-2">
+        <div class="w-1/2">
+          <h1 class="text-lg md:text-xl relative md:z-30">{client} — {title}</h1>
+        </div>
+      </div>
+
+      {description && (
+        <div class="md:flex mb-5">
+          <div class="lg:w-7/12 text-lg md:text-xl leading-large text">
+            <p>{description}</p>
+          </div>
+        </div>
+      )}
+
+      <div class="slider" data-project="0" id={`slider--${slug}`}>
+        <ul class="slider__list">
+          {slides.map((slide, i) => (
+            <li
+              data-caption={`${i + 1} / ${slides.length}${slide.caption ? '<br>' + slide.caption : ''}`}
+              data-slide={i}
+              data-project="0"
+              class={`slider__slide${i === 0 ? ' slider__slide--active' : ''}`}
+            >
+              {slide.type === 'video' ? (
+                <div
+                  class={`video-player slider__image lazy${slide.autoplay ? '' : ' videowithcontrols'} media-landscape`}
+                  id={`video_${slug}_${i}`}
+                >
+                  <video
+                    class="video-player"
+                    poster={slide.poster ? resolveAssetPath(slide.poster) : undefined}
+                    data-autoplay={String(slide.autoplay ?? false)}
+                    muted={slide.autoplay ? true : undefined}
+                    loop={slide.autoplay ? true : undefined}
+                    playsinline
+                    disablepictureinpicture
+                    controlslist="nodownload"
+                  >
+                    <source src={slide.src} type="video/mp4" />
+                    Your browser doesn't support HTML5 video.
+                  </video>
+                  {!slide.autoplay && (
+                    <div class="big-play-button">
+                      <svg class="big-play-button-icon" viewBox="0 0 100 100">
+                        <use xlink:href="#svg_playCircle" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  class="image-wrapper media-landscape"
+                  style="width: 100%; height: 0; padding-bottom: 66.6667%; position: relative; background-color: #dbddd8;"
+                >
+                  <img
+                    class="slider__image lazy"
+                    data-src={resolveAssetPath(slide.src)}
+                    alt={slide.alt || ''}
+                  />
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <div class="slider__buttons">
+          <button class="slider__prev">Prev</button>
+          <button class="slider__next">Next</button>
+        </div>
+      </div>
+
+      {url && (
+        <div class="md:flex pb-20 columns text">
+          <div class="lg:w-7/12 text">
+            <p>
+              <a href={url} target="_blank" rel="noopener">{url}</a>
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <script>
+    import { SliderHandler } from '../../scripts/slider.js';
+    import { VideoHandler } from '../../scripts/video.js';
+    import LazyLoad from 'vanilla-lazyload';
+
+    SliderHandler.init();
+    VideoHandler.init();
+
+    new LazyLoad({
+      elements_selector: 'img.lazy, video.lazy',
+      callback_loaded: function (el) {
+        const sliderEl = el.closest('.slider');
+        if (sliderEl && window.sliders) {
+          const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
+          if (window.sliders[projectIndex]) {
+            window.sliders[projectIndex].calculateButtons();
+            window.sliders[projectIndex].playPauseVideo();
+          }
+        }
+      }
+    });
+  </script>
+</PageLayout>
