@@ -1,6 +1,6 @@
 ---
-title: "Project Title"
-client: "Client Name"
+title: "Project Title"        # just the project name (e.g. "Paris", "II")
+client: "Client Name"          # the artist / brand / client (e.g. "Nils Frahm", "Kiasmos")
 year: 2024
 category: "music"              # optional: music | branding | spatial | editorial | packaging
 status: "active"               # active = visible on homepage, archive = hidden, draft = work in progress

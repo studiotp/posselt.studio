@@ -1,5 +1,5 @@
 ---
-title: "Nils Frahm — Paris"
+title: "Paris"
 client: "Nils Frahm"
 year: 2024
 category: "music"

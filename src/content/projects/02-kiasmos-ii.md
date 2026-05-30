@@ -1,5 +1,5 @@
 ---
-title: "Kiasmos — II"
+title: "II"
 client: "Kiasmos"
 year: 2024
 category: "music"
