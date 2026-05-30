@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { baseUrl } from '../../lib/paths.ts';
 
 export interface Props {
   project: CollectionEntry<'projects'>;
@@ -13,9 +14,9 @@ const slug = project.id;
 
 function resolveAssetPath(src: string): string {
   if (src.startsWith('http') || src.startsWith('/')) {
-    return src;
+    return baseUrl(src);
   }
-  return `/projects/${slug}/${src}`;
+  return baseUrl(`/projects/${slug}/${src}`);
 }
 
 function escapeHtml(str: string): string {

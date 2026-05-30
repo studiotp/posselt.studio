@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { baseUrl } from '../../lib/paths.ts';
 import PageLayout from '../../layouts/PageLayout.astro';
 
 export async function getStaticPaths() {
@@ -16,9 +17,9 @@ const slug = project.id;
 
 function resolveAssetPath(src: string): string {
   if (src.startsWith('http') || src.startsWith('/')) {
-    return src;
+    return baseUrl(src);
   }
-  return `/projects/${slug}/${src}`;
+  return baseUrl(`/projects/${slug}/${src}`);
 }
 ---
 
