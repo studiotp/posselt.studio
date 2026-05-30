@@ -587,23 +587,15 @@
 }
 
 .slider__caption {
+  left: 0;
   margin-bottom: 1.25rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-@media (min-width: 677px) {
-  .slider__caption {
-    margin-bottom: 1.25rem;
-    padding-left: 3.5rem;
-    padding-right: 3.5rem;
-  }
+  bottom: 4rem;
 }
 
 @media (min-width: 1025px) {
   .slider__caption {
-    padding-left: 1.75rem;
-    padding-right: 1.75rem;
+    padding-left: 3.5rem;
+    padding-right: 3.5rem;
     position: absolute;
     margin-bottom: 0;
     bottom: 4rem;
