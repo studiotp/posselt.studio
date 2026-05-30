@@ -1,104 +1,72 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
+import { marked } from 'marked';
+import data from '../data/about.json';
+
+const bioHtml = await Promise.all(data.bio.map(async (text) => marked(text)));
+const portfolioHtml = await marked(data.sidebar.portfolio.text);
+const internshipHtml = await marked(data.sidebar.internships.text);
 ---
 
 <PageLayout
-  title="About - Studio Torsten Posselt"
-  description="STP is a multidisciplinary design studio that focuses on the creation and production of bespoke artworks and design applications."
-  themeClass="bg-purple"
-  bodyClass="page-about"
+  title={data.title}
+  description={data.description}
+  themeClass={data.themeClass}
+  bodyClass={data.bodyClass}
 >
-<div class="bg-purple px-2 lg:px-3 page">
-
+<div class={`${data.themeClass} px-2 lg:px-3 page`}>
     <div class="lg:pl-4">
-
         <div class="flex justify-end mb-15 pt-20 md:py-2">
-
             <div class="w-1/2 md:pl-2">
-
-                <h1 class="text-lg md:text-xl relative md:z-30">About</h1>
-
+                <h1 class="text-lg md:text-xl relative md:z-30">{data.heading}</h1>
             </div>
-
         </div>
 
         <div class="md:flex mb-5">
-
             <div class="lg:w-7/12 text-lg md:text-xl leading-large text">
-
-                <p>STP is a multidisciplinary design studio that focuses equally on the creation and production of bespoke artworks and design applications. We are specialised in art direction, creative consultancy and design for editorial, branding, graphics and packaging as well as spatial installations and physical artworks – whether digital or analogue, from small to big, on all continents and beyond.</p>
-<p>Clients and partners STP has worked with:<br>
-Universal Music, Nils Frahm, Ólafur Arnalds, Barbican Centre, Erased Tapes Records, Kiasmos, Reebok, Volkswagen Group, Wikimedia, Manners McDade, Leiter, Reeperbahn Festival</p>
-
+                <p>{data.introduction}</p>
+                <p set:html={marked(data.clients)}></p>
             </div>
-
         </div>
 
         <div class="md:flex mb-10 justify-start columns">
-
             <div class="lg:w-5/12 text column">
-
-                <p>Torsten Posselt (b. 1979 Dresden, Germany) is a graphic designer, visual artist and art director. He studied at the University of Applied Sciences (HTW Dresden) before getting a diploma in visual communication and printmaking at the University of Arts (UdK Berlin).</p>
-<p>In 2011 he co-founded the Berlin-based multidisciplinary design studio FELD and worked predominantly as managing partner and design director until 2019. He led the design and production of numerous projects for notable brands like Reebok and Volkswagen, research facilities like the Fraunhofer Institute (Munich), and cultural institutions like the Barbican Centre (London). Studio Torsten Posselt was founded in 2020 to put Posselt's craft on a more prominent stage and allow him to focus creatively.</p>
-<p>His award-winning artworks have provided the visual counterpart to the music of renowned artists like Nils Frahm and Ólafur Arnalds, now iconic to the catalogues of respected records labels like Erased Tapes and Mercury KX. He has developed a personal and unique design language which transcends traditional graphic design with the power of ever-changing modern media technologies.</p>
-<p>Posselt has given talks about his practice and holds workshops and panels about design processes and packaging. You can see his works featured in the books <a href="https://thamesandhudson.com/min-9780500292198" target="_blank" rel="noopener">MIN – The New Simplicity in Graphic Design</a> and <a href="https://thamesandhudson.com/collector-s-edition-9780500517574" target="_blank" rel="noopener">Collector's Edition – Innovative Packaging and Graphics</a> by Stuart Tolley as well as <a href="https://thamesandhudson.com/album-art-9780500294154" target="_blank" rel="noopener">Album Art – New Music Graphics</a> by John Foster, published by Thames and Hudson.</p>
-
+                {bioHtml.map((html) => (
+                  <p set:html={html}></p>
+                ))}
             </div>
 
-            <div class="lg:w-1/12 column">
-
-                &nbsp;
-
-            </div>
+            <div class="lg:w-1/12 column">&nbsp;</div>
 
             <div class="lg:w-3/12 text-white column">
-                                            <h2 class="font-bold">Portfolio:</h2>
+                <h2 class="font-bold">{data.sidebar.portfolio.heading}</h2>
+                <div class="mb-4 text" set:html={portfolioHtml}></div>
 
-                            <div class="mb-4 text">
-                                <p>Prospective clients and collaborators — please request a selected portfolio PDF <a href="mailto:ahoi@posselt.studio">here</a>.</p>
-                            </div>
-                                                    <h2 class="font-bold">Internships:</h2>
-
-                            <div class="mb-4 text">
-                                <p>The availability of internships at STP is always changing and we are currently NOT accepting applications. Please come back to this page for any news on our internship programme. Thank you for your understanding that we are unable to reply to every application we receive.</p>
-                            </div>
-                                    </div>
-
+                <h2 class="font-bold">{data.sidebar.internships.heading}</h2>
+                <div class="mb-4 text" set:html={internshipHtml}></div>
+            </div>
         </div>
 
         <div class="md:flex mb-15">
-
-            <div class="lg:w-10/12">
-                            </div>
-
+            <div class="lg:w-10/12"></div>
         </div>
 
         <div class="md:flex pb-20 columns text">
-
             <div class="lg:w-2/12 column mb-10">
-
-                <div class="font-bold">Contact</div>
-                <p>Studio Torsten Posselt<br>
-Urbanstraße 116<br>
-10967 Berlin<br>
-Germany</p>
-<p>ahoi@posselt.studio<br>
-<a href="https://goo.gl/maps/a3skbENJEC4vn1Tj8" target="_blank" rel="noopener">Maps</a></p>
-<p>on <a href="https://www.instagram.com/studio_t_p/" target="_blank" rel="noopener">Instagram</a></p>
+                <div class="font-bold">{data.footer.contact.heading}</div>
+                <p set:html={marked(data.footer.contact.address.replace(/\n/g, '  \n'))}></p>
+                <p>
+                    {data.footer.contact.email}<br>
+                    <a href={data.footer.contact.mapsUrl} target="_blank" rel="noopener">Maps</a>
+                </p>
+                <p>on <a href={data.footer.contact.instagramUrl} target="_blank" rel="noopener">Instagram</a></p>
             </div>
 
             <div class="lg:w-3/12 column">
-
-                <div class="font-bold">Copyright</div>
-                <p>All work © 2000 – 2026 by STP</p>
-
+                <div class="font-bold">{data.footer.copyright.heading}</div>
+                <p>{data.footer.copyright.text}</p>
             </div>
-
         </div>
-
     </div>
-
 </div>
-
-<!-- footer -->
 </PageLayout>

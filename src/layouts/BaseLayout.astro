@@ -1,4 +1,5 @@
 ---
+import '../styles/global.css';
 import MetaTags from '../components/head/MetaTags.astro';
 import Favicons from '../components/head/Favicons.astro';
 import SkipToContent from '../components/layout/SkipToContent.astro';
@@ -39,9 +40,8 @@ const {
     />
     <Favicons />
 
-    <!-- Asset placeholders -->
+    <!-- Adobe Typekit (legacy placeholder) -->
     <!-- <link rel="stylesheet" href="https://use.typekit.net/ppf8krb.css"> -->
-    <!-- <link href="/assets/css/style.css" rel="stylesheet"> -->
 
     <slot name="head" />
   </head>
@@ -52,14 +52,3 @@ const {
     </STPShell>
   </body>
 </html>
-
-<style is:global>
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-  }
-</style>

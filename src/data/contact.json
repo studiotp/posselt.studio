@@ -1,0 +1,23 @@
+{
+  "title": "Contact - Studio Torsten Posselt",
+  "description": "STP is a multidisciplinary design studio that focuses equally on the creation and production of bespoke artworks and design applications.",
+  "themeClass": "bg-yellow",
+  "bodyClass": "page-contact",
+  "heading": "Contact",
+  "address": "Studio\nTorsten Posselt\nUrbanstraße 116\n10967 Berlin\nGermany",
+  "mapsUrl": "https://goo.gl/maps/a3skbENJEC4vn1Tj8",
+  "columns": [
+    {
+      "label": "For general inquiries",
+      "content": "ahoi@posselt.studio"
+    },
+    {
+      "label": "VAT No.",
+      "content": "DE325612420"
+    },
+    {
+      "label": "Connect with us",
+      "content": "[Instagram](https://www.instagram.com/studio_t_p/) [Vimeo](https://vimeo.com/studiotp)"
+    }
+  ]
+}

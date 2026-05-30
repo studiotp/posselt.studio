@@ -68,5 +68,22 @@ const isPrivacy = pathname.includes('/privacy');
 
 <div class={`header-colour header-colour--bottom ${themeClass}`}></div>
 
-<!-- Asset placeholder: custom theme script -->
-<!-- <script src="/assets/js/script.js"></script> -->
+<!-- Cookie Banner -->
+<div class="cookie-banner">
+    <div class="cookie-banner__text">
+        We use cookies to ensure you get the best experience on our website. If you remain on the page, you agree to the <SmartLink href="/privacy/">use of cookies</SmartLink>.
+    </div>
+    <div class="cookie-banner__right">
+        <div class="cookie-banner__button button cookie-banner-close">Accept</div>
+        <div class="cookie-banner__close cookie-banner-close">X</div>
+    </div>
+</div>
+
+<script>
+  import { initMenu } from '../../scripts/menu.js';
+  import { CookieBanner } from '../../scripts/cookieBanner.js';
+
+  initMenu();
+  const cookie = new CookieBanner();
+  cookie.init();
+</script>
