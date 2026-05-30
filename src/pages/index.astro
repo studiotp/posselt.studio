@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import PageLayout from '../layouts/PageLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectSlider from '../components/projects/ProjectSlider.astro';
 
 const allProjects = await getCollection('projects');
@@ -9,7 +9,7 @@ const activeProjects = allProjects
   .sort((a, b) => a.id.localeCompare(b.id));
 ---
 
-<PageLayout
+<BaseLayout
   title="STP - Studio Torsten Posselt"
   description="A collection of design projects by Studio Torsten Posselt — from artworks, branding, packaging and editorial design to immersive spatial installations."
   themeClass="bg-white"
@@ -19,6 +19,9 @@ const activeProjects = allProjects
     {activeProjects.map((project, index) => (
       <ProjectSlider project={project} index={index} />
     ))}
+    <li class="back-to-top back-to-top-home">
+      <a href="#">O</a>
+    </li>
   </ul>
 
   <script>
@@ -70,4 +73,4 @@ const activeProjects = allProjects
 
     videos.forEach((video) => observer.observe(video));
   </script>
-</PageLayout>
+</BaseLayout>
