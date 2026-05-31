@@ -21,6 +21,23 @@ function resolveAssetPath(src: string): string {
   }
   return baseUrl(`/projects/${slug}/${src}`);
 }
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+const captions = slides.map((slide, i) => {
+  const count = `${i + 1} / ${slides.length}`;
+  const cap = slide.caption || '\u00A0';
+  return `${count}<br>${escapeHtml(cap)}`;
+});
+
+const initialCaption = captions[0] || '';
 ---
 
 <PageLayout
@@ -46,10 +63,10 @@ function resolveAssetPath(src: string): string {
       )}
 
       <div class="slider" data-project="0" id={`slider--${slug}`}>
-        <ul class="slider__list">
+        <div class="slider__slides">
           {slides.map((slide, i) => (
-            <li
-              data-caption={`${i + 1} / ${slides.length}${slide.caption ? '<br>' + slide.caption : ''}`}
+            <div
+              data-caption={captions[i]}
               data-slide={i}
               data-project="0"
               class={`slider__slide${i === 0 ? ' slider__slide--active' : ''}`}
@@ -81,10 +98,7 @@ function resolveAssetPath(src: string): string {
                   )}
                 </div>
               ) : (
-                <div
-                  class="image-wrapper media-landscape"
-                  style="width: 100%; height: 0; padding-bottom: 66.6667%; position: relative; background-color: #dbddd8;"
-                >
+                <div class="image-wrapper media-landscape">
                   <img
                     class="slider__image lazy"
                     data-src={resolveAssetPath(slide.src)}
@@ -92,13 +106,18 @@ function resolveAssetPath(src: string): string {
                   />
                 </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
 
-        <div class="slider__buttons">
-          <button class="slider__prev">Prev</button>
-          <button class="slider__next">Next</button>
+        <div class="slider__footer">
+          <div class="slider__caption">
+            <span class="slide-caption" set:html={initialCaption} />
+          </div>
+          <div class="slider__nav">
+            <button class="slider__prev" aria-label="Previous slide">←</button>
+            <button class="slider__next" aria-label="Next slide">→</button>
+          </div>
         </div>
       </div>
 
@@ -129,8 +148,7 @@ function resolveAssetPath(src: string): string {
         if (sliderEl && window.sliders) {
           const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
           if (window.sliders[projectIndex]) {
-            window.sliders[projectIndex].calculateButtons();
-            window.sliders[projectIndex].playPauseVideo();
+            window.sliders[projectIndex].updateHeight();
           }
         }
       }

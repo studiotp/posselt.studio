@@ -39,18 +39,10 @@ const initialCaption = captions[0] || '';
 ---
 
 <li class="projects__item">
-  <figcaption class="mt-2 slider__caption">
-    <h2 style="display:inline;">{client} — {title}</h2>
-    {url && (
-      <> — <a href={url} target="_blank" rel="noopener">{url}</a></>
-    )}
-    <span class="slide-caption" set:html={initialCaption}></span>
-  </figcaption>
-
   <div class="slider" data-project={index} id={`slider--${slug}`}>
-    <ul class="slider__list">
+    <div class="slider__slides">
       {slides.map((slide, i) => (
-        <li
+        <div
           data-caption={captions[i]}
           data-slide={i}
           data-project={index}
@@ -83,10 +75,7 @@ const initialCaption = captions[0] || '';
               )}
             </div>
           ) : (
-            <div
-              class="image-wrapper media-landscape"
-              style="width: 100%; height: 0; padding-bottom: 66.6667%; position: relative; background-color: #dbddd8;"
-            >
+            <div class="image-wrapper media-landscape">
               <img
                 class="slider__image lazy"
                 data-src={resolveAssetPath(slide.src)}
@@ -94,13 +83,23 @@ const initialCaption = captions[0] || '';
               />
             </div>
           )}
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
 
-    <div class="slider__buttons">
-      <button class="slider__prev">Prev</button>
-      <button class="slider__next">Next</button>
+    <div class="slider__footer">
+      <div class="slider__caption">
+        <h2>{client} — {title}</h2>
+        {url && (
+          <> — <a href={url} target="_blank" rel="noopener">{url}</a></>
+        )}
+        <span class="slide-caption" set:html={initialCaption} />
+      </div>
+
+      <div class="slider__nav">
+        <button class="slider__prev" aria-label="Previous slide">←</button>
+        <button class="slider__next" aria-label="Next slide">→</button>
+      </div>
     </div>
   </div>
 </li>

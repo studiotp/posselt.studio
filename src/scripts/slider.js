@@ -1,107 +1,109 @@
 /**
- * Custom project slider — ported from WordPress theme
+ * Custom project slider — modern contained fade slider
  */
 export class SliderHandler {
   static init() {
     window.sliders = [];
     const sliders = document.querySelectorAll('.slider');
-    for (let i = 0; i < sliders.length; i++) {
-      window.sliders.push(new SliderInstance(sliders[i]));
-    }
+    sliders.forEach((slider, index) => {
+      window.sliders.push(new SliderInstance(slider, index));
+    });
   }
 }
 
 class SliderInstance {
-  constructor(elem) {
+  constructor(elem, index) {
     this.slider = elem;
-    this.id = this.slider.id;
-    this.prev = document.querySelector('#' + this.id + ' .slider__prev');
-    this.next = document.querySelector('#' + this.id + ' .slider__next');
-    this.slides = document.querySelectorAll('#' + this.id + ' .slider__slide');
+    this.index = index;
+    this.slidesContainer = elem.querySelector('.slider__slides');
+    this.slides = elem.querySelectorAll('.slider__slide');
     this.currentSlide = 0;
-    this.counter = document.querySelector('#' + this.id + ' .slider__counter');
-    this.buttons = document.querySelector('#' + this.id + ' .slider__buttons');
+    this.prevBtn = elem.querySelector('.slider__prev');
+    this.nextBtn = elem.querySelector('.slider__next');
+    this.captionEl = elem.querySelector('.slide-caption');
 
-    this.calculateButtons();
+    this.prevBtn?.addEventListener('click', () => this.goTo(this.currentSlide - 1));
+    this.nextBtn?.addEventListener('click', () => this.goTo(this.currentSlide + 1));
 
-    this.prev?.addEventListener('click', () => {
-      this.slides[this.currentSlide].className = 'slider__slide';
-      if (this.currentSlide === 0) {
-        this.currentSlide = this.slides.length - 1;
+    // Recalculate height on window resize
+    window.addEventListener('resize', () => this.updateHeight());
+
+    // Update height once images load inside this slider
+    const images = this.slider.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.complete) {
+        this.updateHeight();
       } else {
-        this.currentSlide--;
+        img.addEventListener('load', () => this.updateHeight());
       }
-      this.slides[this.currentSlide].className = 'slider__slide slider__slide--active';
-      this.updateCaption();
-      this.playPauseVideo();
-      this.calculateButtons();
     });
 
-    this.next?.addEventListener('click', () => {
-      this.slides[this.currentSlide].className = 'slider__slide';
-      this.currentSlide++;
-      this.currentSlide %= this.slides.length;
-      this.slides[this.currentSlide].className = 'slider__slide slider__slide--active';
-      this.updateCaption();
-      this.playPauseVideo();
-      this.calculateButtons();
-    });
+    // Initial height + video handling
+    this.updateHeight();
+    this.playPauseVideo();
+  }
+
+  goTo(index) {
+    if (index < 0) index = this.slides.length - 1;
+    if (index >= this.slides.length) index = 0;
+
+    this.slides[this.currentSlide].classList.remove('slider__slide--active');
+    this.currentSlide = index;
+    this.slides[this.currentSlide].classList.add('slider__slide--active');
+
+    this.updateCaption();
+    this.updateHeight();
+    this.playPauseVideo();
+  }
+
+  updateHeight() {
+    if (!this.slidesContainer) return;
+
+    const active = this.slides[this.currentSlide];
+    if (!active) return;
+
+    const img = active.querySelector('img');
+    const video = active.querySelector('video');
+    const containerWidth = this.slidesContainer.clientWidth;
+
+    let height = 0;
+
+    if (img && img.complete && img.naturalWidth) {
+      height = (img.naturalHeight / img.naturalWidth) * containerWidth;
+    } else if (video && video.videoWidth) {
+      height = (video.videoHeight / video.videoWidth) * containerWidth;
+    } else {
+      // Fallback: use the active slide's bounding height if available
+      const rect = active.getBoundingClientRect();
+      if (rect.height > 0) {
+        height = rect.height;
+      }
+    }
+
+    if (height > 0) {
+      this.slidesContainer.style.height = `${height}px`;
+    }
   }
 
   playPauseVideo() {
-    let itemsProcessed = 0;
-    this.slides.forEach((item, index, array) => {
-      const video = item.querySelector('video');
-      if (video) {
-        video.pause();
-      }
-      itemsProcessed++;
-      if (itemsProcessed === array.length) {
-        this.playCurrentVideo();
-      }
+    this.slides.forEach((slide) => {
+      const video = slide.querySelector('video');
+      if (video) video.pause();
     });
-  }
 
-  playCurrentVideo() {
-    const video = this.slides[this.currentSlide].querySelector('video');
-    if (video) {
-      const autoPlay = video.getAttribute('data-autoplay');
-      if (autoPlay === 'true' || video.autoplay) {
-        video.play();
+    const activeVideo = this.slides[this.currentSlide].querySelector('video');
+    if (activeVideo) {
+      const autoPlay = activeVideo.getAttribute('data-autoplay');
+      if (autoPlay === 'true') {
+        activeVideo.play();
       }
-    }
-  }
-
-  calculateButtons() {
-    let targetNode = null;
-    const img = this.slides[this.currentSlide].querySelector('img');
-    const video = this.slides[this.currentSlide].querySelector('video');
-
-    if (img) {
-      targetNode = img;
-    } else {
-      targetNode = video;
-    }
-
-    if (targetNode && this.buttons) {
-      this.buttons.style.width = targetNode.clientWidth + 'px';
-      this.buttons.style.height = targetNode.clientHeight + 'px';
     }
   }
 
   updateCaption() {
-    const decodeHTML = (html) => {
-      const txt = document.createElement('textarea');
-      txt.innerHTML = html;
-      return txt.value;
-    };
-
-    const captionEl = this.slides[this.currentSlide].parentNode?.parentNode?.parentNode?.querySelector('.slide-caption');
-    if (captionEl) {
-      const captionData = this.slides[this.currentSlide].getAttribute('data-caption');
-      if (captionData) {
-        captionEl.innerHTML = decodeHTML(captionData);
-      }
+    const captionData = this.slides[this.currentSlide].getAttribute('data-caption');
+    if (captionData && this.captionEl) {
+      this.captionEl.innerHTML = captionData;
     }
   }
 }

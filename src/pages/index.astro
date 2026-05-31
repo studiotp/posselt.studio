@@ -19,10 +19,11 @@ const activeProjects = allProjects
     {activeProjects.map((project, index) => (
       <ProjectSlider project={project} index={index} />
     ))}
-    <li class="back-to-top back-to-top-home">
-      <a href="#">O</a>
-    </li>
   </ul>
+
+  <div class="back-to-top back-to-top-home">
+    <a href="#">O</a>
+  </div>
 
   <script>
     import { SliderHandler } from '../scripts/slider.js';
@@ -39,13 +40,12 @@ const activeProjects = allProjects
     const lazyContent = new LazyLoad({
       elements_selector: 'img.lazy, video.lazy',
       callback_loaded: function (el) {
-        // Find the parent slider and recalculate buttons
+        // Find the parent slider and recalculate height
         const sliderEl = el.closest('.slider');
         if (sliderEl && window.sliders) {
           const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
           if (window.sliders[projectIndex]) {
-            window.sliders[projectIndex].calculateButtons();
-            window.sliders[projectIndex].playPauseVideo();
+            window.sliders[projectIndex].updateHeight();
           }
         }
       }
