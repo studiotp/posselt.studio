@@ -552,6 +552,10 @@
   display: block;
 }
 
+.slider__slide video {
+  object-fit: contain;
+}
+
 .slider__footer {
   display: flex;
   justify-content: space-between;

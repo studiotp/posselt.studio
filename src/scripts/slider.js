@@ -38,6 +38,19 @@ class SliderInstance {
       }
     });
 
+    // Update height once video metadata is available
+    const videos = this.slider.querySelectorAll('video');
+    videos.forEach((video) => {
+      if (video.readyState >= 1) {
+        this.updateHeight();
+      } else {
+        video.addEventListener('loadedmetadata', () => this.updateHeight());
+      }
+    });
+
+    // Touch / swipe support
+    this.initTouch();
+
     // Initial height + video handling
     this.updateHeight();
     this.playPauseVideo();
@@ -105,5 +118,40 @@ class SliderInstance {
     if (captionData && this.captionEl) {
       this.captionEl.innerHTML = captionData;
     }
+  }
+
+  initTouch() {
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    const threshold = 50;     // min horizontal distance (px)
+    const restraint = 100;    // max vertical distance (px) to qualify as horizontal swipe
+    const allowedTime = 500;  // max time (ms) for a swipe
+
+    this.slider.addEventListener('touchstart', (e) => {
+      const touch = e.changedTouches[0];
+      startX = touch.pageX;
+      startY = touch.pageY;
+      startTime = new Date().getTime();
+    }, { passive: true });
+
+    this.slider.addEventListener('touchend', (e) => {
+      const touch = e.changedTouches[0];
+      const distX = touch.pageX - startX;
+      const distY = touch.pageY - startY;
+      const elapsedTime = new Date().getTime() - startTime;
+
+      if (
+        elapsedTime <= allowedTime &&
+        Math.abs(distX) >= threshold &&
+        Math.abs(distY) <= restraint
+      ) {
+        if (distX > 0) {
+          this.goTo(this.currentSlide - 1);
+        } else {
+          this.goTo(this.currentSlide + 1);
+        }
+      }
+    }, { passive: true });
   }
 }
