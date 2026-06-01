@@ -3,7 +3,7 @@ title: "II"
 client: "Kiasmos"
 year: 2024
 category: "music"
-status: "active"
+status: "archive"
 description: "Art direction and design for Kiasmos' second album release."
 slides:
   - type: video

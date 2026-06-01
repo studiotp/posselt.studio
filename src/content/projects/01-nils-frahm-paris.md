@@ -1,5 +1,5 @@
 ---
-title: "Paris"
+title: "Paris - France"
 client: "Nils Frahm"
 year: 2024
 category: "music"
@@ -7,11 +7,11 @@ status: "active"
 description: "Art direction and design for Nils Frahm's Paris release."
 slides:
   - type: image
-    src: "VIEW_02.jpg"
+    src: "VIEW_03.jpg"
     caption: "Art direction and design"
     alt: "Album cover design"
   - type: image
-    src: "VIEW_03.jpg"
+    src: "VIEW_02.jpg"
     caption: "Art direction and design"
     alt: "Album artwork detail"
   - type: image
