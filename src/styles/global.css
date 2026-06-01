@@ -61,6 +61,22 @@
   font-display: swap;
 }
 
+:root {
+  /* Layout system — single source of truth for corners & safe zones */
+  --corner-size: clamp(26px, 1.5vw + 20px, 32px);
+  --corner-margin: clamp(10px, 0.5vw + 8px, 16px);
+  --gap: var(--corner-margin);
+  --container-padding: 1.25rem;
+
+  /* Approximate width of "Torsten Posselt" in faktum */
+  --logo-chars: 5.5;
+  --logo-width: calc(var(--logo-chars) * var(--corner-size));
+
+  /* Safe zones: corner footprint + gap */
+  --safe-left: calc(var(--corner-size) + var(--corner-margin) + var(--gap));
+  --safe-right: calc(var(--logo-width) + var(--corner-margin) + var(--gap));
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -154,19 +170,12 @@
 
 .corner {
   position: fixed;
-  font-size: 2rem;
-  margin: 0.5rem;
+  font-size: var(--corner-size);
+  margin: var(--corner-margin);
   line-height: 1;
   z-index: 50;
   cursor: pointer;
   user-select: none;
-}
-
-@media (min-width: 677px) {
-  .corner {
-    font-size: 2rem;
-    margin: 1.25rem;
-  }
 }
 
 .corner--s {
@@ -228,7 +237,7 @@
   left: 0;
   display: block;
   width: 100%;
-  height: 3.5rem;
+  height: 5.3rem;
   z-index: 30;
   content: ".";
   text-indent: -9999px;
@@ -236,7 +245,7 @@
 
 @media (min-width: 677px) {
   .header-colour {
-    height: 3.5rem;
+    height: 5.3rem;
     z-index: 30;
   }
 }
@@ -501,8 +510,8 @@
 }
 
 .projects__item {
-  max-width: 74%;
-  margin: 0 auto 0 3%;
+  max-width: min(74%, calc(100% - var(--safe-right) - var(--safe-left)));
+  margin-left: max(3%, calc(var(--safe-left) - var(--container-padding)));
   padding: 6rem 0 4rem;
   position: relative;
   z-index: 20;
