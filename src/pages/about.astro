@@ -16,8 +16,8 @@ const internshipHtml = await marked(data.sidebar.internships.text);
 >
 <div class={`${data.themeClass} px-2 lg:px-3 page`}>
     <div class="lg:pl-4">
-        <div class="flex justify-start md:justify-end mb-15 pt-20 md:py-2">
-            <div class="w-full md:w-1/2 md:pl-2">
+        <div class="flex justify-end -mr-2 md:mr-0 mb-15 pt-20 md:py-2">
+            <div class="w-[calc(var(--logo-width)+var(--corner-margin)+2rem)] md:w-1/2 md:pl-2">
                 <h1 class="text-lg md:text-xl relative md:z-30">{data.heading}</h1>
             </div>
         </div>
