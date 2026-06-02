@@ -63,7 +63,7 @@
 
 :root {
   /* Layout system — single source of truth for corners & safe zones */
-  --corner-size: clamp(22px, 1vw + 18px, 28px);
+  --corner-size: clamp(24px, 1vw + 18px, 29px);
   --corner-margin: clamp(10px, 0.5vw + 8px, 16px);
   --gap: var(--corner-margin);
   --container-padding: 1.25rem;
