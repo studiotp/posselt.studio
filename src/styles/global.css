@@ -553,13 +553,17 @@
   cursor: url('../assets/custom_cursor.svg') 21 20, auto;
 }
 
+.slider__slides.cursor-left {
+  cursor: url('../assets/custom_cursor_left.svg') 21 20, auto;
+}
+
 .slider__slide {
   grid-area: 1 / 1;
   opacity: 0;
   transition: opacity 0.5s ease;
   z-index: 0;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
@@ -575,7 +579,6 @@
   width: auto;
   max-width: 100%;
   display: block;
-  margin: 0 auto;
 }
 
 .slider__slide video {

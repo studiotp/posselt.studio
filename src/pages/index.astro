@@ -38,17 +38,7 @@ const activeProjects = allProjects
 
     // Initialize lazy loading
     const lazyContent = new LazyLoad({
-      elements_selector: 'img.lazy, video.lazy',
-      callback_loaded: function (el) {
-        // Find the parent slider and recalculate height
-        const sliderEl = el.closest('.slider');
-        if (sliderEl && window.sliders) {
-          const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
-          if (window.sliders[projectIndex]) {
-            window.sliders[projectIndex].updateHeight();
-          }
-        }
-      }
+      elements_selector: 'img.lazy, video.lazy'
     });
 
     // Video intersection observer (pauses videos when not in viewport)
@@ -72,5 +62,21 @@ const activeProjects = allProjects
     );
 
     videos.forEach((video) => observer.observe(video));
+
+    // Update URL hash as user scrolls through projects
+    const projectItems = document.querySelectorAll('.projects__item');
+    const projectObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible && visible.target.id) {
+          history.replaceState(null, '', '#' + visible.target.id);
+        }
+      },
+      { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
+    );
+
+    projectItems.forEach((item) => projectObserver.observe(item));
   </script>
 </BaseLayout>

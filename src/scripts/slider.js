@@ -34,34 +34,23 @@ class SliderInstance {
       }
     });
 
-    // Recalculate height on window resize
-    window.addEventListener('resize', () => this.updateHeight());
-
-    // Update height once images load inside this slider
-    const images = this.slider.querySelectorAll('img');
-    images.forEach((img) => {
-      if (img.complete) {
-        this.updateHeight();
-      } else {
-        img.addEventListener('load', () => this.updateHeight());
-      }
+    // Cursor flipping on hover
+    this.slidesContainer?.addEventListener('mousemove', (e) => {
+      const rect = this.slidesContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const isLeft = x < rect.width / 2;
+      this.slidesContainer.classList.toggle('cursor-left', isLeft);
+      this.slidesContainer.classList.toggle('cursor-right', !isLeft);
     });
 
-    // Update height once video metadata is available
-    const videos = this.slider.querySelectorAll('video');
-    videos.forEach((video) => {
-      if (video.readyState >= 1) {
-        this.updateHeight();
-      } else {
-        video.addEventListener('loadedmetadata', () => this.updateHeight());
-      }
+    this.slidesContainer?.addEventListener('mouseleave', () => {
+      this.slidesContainer.classList.remove('cursor-left', 'cursor-right');
     });
 
     // Touch / swipe support
     this.initTouch();
 
-    // Initial height + video handling
-    this.updateHeight();
+    // Initial video handling
     this.playPauseVideo();
   }
 
@@ -74,23 +63,7 @@ class SliderInstance {
     this.slides[this.currentSlide].classList.add('slider__slide--active');
 
     this.updateCaption();
-    this.updateHeight();
     this.playPauseVideo();
-  }
-
-  updateHeight() {
-    if (!this.slidesContainer) return;
-
-    const active = this.slides[this.currentSlide];
-    if (!active) return;
-
-    const rect = active.getBoundingClientRect();
-    if (rect.height > 0) {
-      const currentMin = parseFloat(this.slidesContainer.style.minHeight) || 0;
-      if (rect.height > currentMin) {
-        this.slidesContainer.style.minHeight = `${rect.height}px`;
-      }
-    }
   }
 
   playPauseVideo() {

@@ -138,16 +138,7 @@ const initialCaption = captions[0] || '';
     VideoHandler.init();
 
     new LazyLoad({
-      elements_selector: 'img.lazy, video.lazy',
-      callback_loaded: function (el) {
-        const sliderEl = el.closest('.slider');
-        if (sliderEl && window.sliders) {
-          const projectIndex = parseInt(sliderEl.getAttribute('data-project') || '0');
-          if (window.sliders[projectIndex]) {
-            window.sliders[projectIndex].updateHeight();
-          }
-        }
-      }
+      elements_selector: 'img.lazy, video.lazy'
     });
   </script>
 </PageLayout>
