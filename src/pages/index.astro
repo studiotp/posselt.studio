@@ -65,18 +65,58 @@ const activeProjects = allProjects
 
     // Update URL hash as user scrolls through projects
     const projectItems = document.querySelectorAll('.projects__item');
-    const projectObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible && visible.target.id) {
-          history.replaceState(null, '', '#' + visible.target.id);
-        }
-      },
-      { threshold: [0, 0.25, 0.5, 0.75, 1.0] }
-    );
+    let lastHash = location.hash.slice(1);
+    let scrollTimer = null;
+    const HYSTERESIS = window.innerHeight * 0.15; // ~15% of viewport
 
-    projectItems.forEach((item) => projectObserver.observe(item));
+    const updateHash = () => {
+      const viewportCenter = window.scrollY + window.innerHeight / 2;
+      let closest = null;
+      let closestDist = Infinity;
+
+      projectItems.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const itemCenter = window.scrollY + rect.top + rect.height / 2;
+        const dist = Math.abs(itemCenter - viewportCenter);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closest = item;
+        }
+      });
+
+      if (closest && closest.id !== lastHash) {
+        // Only switch if the new project is significantly more centered
+        const current = document.getElementById(lastHash);
+        if (current) {
+          const curRect = current.getBoundingClientRect();
+          const curCenter = window.scrollY + curRect.top + curRect.height / 2;
+          const curDist = Math.abs(curCenter - viewportCenter);
+          if (closestDist < curDist - HYSTERESIS) {
+            lastHash = closest.id;
+            history.replaceState(null, '', '#' + closest.id);
+          }
+        } else {
+          lastHash = closest.id;
+          history.replaceState(null, '', '#' + closest.id);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', () => {
+      if (scrollTimer) return;
+      scrollTimer = window.setTimeout(() => {
+        scrollTimer = null;
+        updateHash();
+      }, 150);
+    }, { passive: true });
+
+    // On load with a hash, scroll to the target after layout settles
+    if (location.hash) {
+      const targetId = location.hash.slice(1);
+      const target = document.getElementById(targetId);
+      if (target) {
+        setTimeout(() => target.scrollIntoView(), 600);
+      }
+    }
   </script>
 </BaseLayout>
