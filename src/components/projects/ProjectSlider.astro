@@ -38,8 +38,8 @@ const captions = slides.map((slide, i) => {
 const initialCaption = captions[0] || '';
 ---
 
-<li class="projects__item">
-  <div class="slider" data-project={index} id={`slider--${slug}`}>
+<li class="projects__item" id={slug}>
+  <div class="slider" data-project={index}>
     <div class="slider__slides">
       {slides.map((slide, i) => (
         <div
@@ -96,10 +96,6 @@ const initialCaption = captions[0] || '';
         <span class="slide-caption" set:html={initialCaption} />
       </div>
 
-      <div class="slider__nav">
-        <button class="slider__prev" aria-label="Previous slide">←</button>
-        <button class="slider__next" aria-label="Next slide">→</button>
-      </div>
     </div>
   </div>
 </li>

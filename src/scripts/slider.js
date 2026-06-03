@@ -18,12 +18,21 @@ class SliderInstance {
     this.slidesContainer = elem.querySelector('.slider__slides');
     this.slides = elem.querySelectorAll('.slider__slide');
     this.currentSlide = 0;
-    this.prevBtn = elem.querySelector('.slider__prev');
-    this.nextBtn = elem.querySelector('.slider__next');
     this.captionEl = elem.querySelector('.slide-caption');
 
-    this.prevBtn?.addEventListener('click', () => this.goTo(this.currentSlide - 1));
-    this.nextBtn?.addEventListener('click', () => this.goTo(this.currentSlide + 1));
+    // Click navigation: left half = prev, right half = next
+    this.slidesContainer?.addEventListener('click', (e) => {
+      // Ignore clicks on interactive elements (play button, controls, links)
+      if (e.target.closest('.big-play-button, .video-controls, a, button')) return;
+
+      const rect = this.slidesContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      if (x < rect.width / 2) {
+        this.goTo(this.currentSlide - 1);
+      } else {
+        this.goTo(this.currentSlide + 1);
+      }
+    });
 
     // Recalculate height on window resize
     window.addEventListener('resize', () => this.updateHeight());
@@ -75,26 +84,12 @@ class SliderInstance {
     const active = this.slides[this.currentSlide];
     if (!active) return;
 
-    const img = active.querySelector('img');
-    const video = active.querySelector('video');
-    const containerWidth = this.slidesContainer.clientWidth;
-
-    let height = 0;
-
-    if (img && img.complete && img.naturalWidth) {
-      height = (img.naturalHeight / img.naturalWidth) * containerWidth;
-    } else if (video && video.videoWidth) {
-      height = (video.videoHeight / video.videoWidth) * containerWidth;
-    } else {
-      // Fallback: use the active slide's bounding height if available
-      const rect = active.getBoundingClientRect();
-      if (rect.height > 0) {
-        height = rect.height;
+    const rect = active.getBoundingClientRect();
+    if (rect.height > 0) {
+      const currentMin = parseFloat(this.slidesContainer.style.minHeight) || 0;
+      if (rect.height > currentMin) {
+        this.slidesContainer.style.minHeight = `${rect.height}px`;
       }
-    }
-
-    if (height > 0) {
-      this.slidesContainer.style.height = `${height}px`;
     }
   }
 
