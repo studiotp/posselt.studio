@@ -110,12 +110,21 @@ const activeProjects = allProjects
       }, 150);
     }, { passive: true });
 
-    // On load with a hash, scroll to the target after layout settles
+    // On load with a hash, prevent browser auto-scroll to collapsed element,
+    // then manually scroll after layout has settled.
     if (location.hash) {
       const targetId = location.hash.slice(1);
       const target = document.getElementById(targetId);
       if (target) {
-        setTimeout(() => target.scrollIntoView(), 600);
+        const originalHash = location.hash;
+        // Strip hash so the browser won't jump to the (still-collapsed) element
+        history.replaceState(null, '', location.pathname + location.search);
+
+        window.setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth' });
+          history.replaceState(null, '', originalHash);
+          lastHash = targetId;
+        }, 800);
       }
     }
   </script>
