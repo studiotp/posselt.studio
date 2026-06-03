@@ -3,7 +3,5 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://studiotp.github.io',
-  base: '/posselt.studio',
   trailingSlash: 'always',
 });

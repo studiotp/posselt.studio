@@ -8,40 +8,8 @@ export interface Props {
 }
 
 const { href, class: className, target, rel, title } = Astro.props;
-
-function resolveUrl(href: string): string {
-  // Pass through external, mailto, tel, and anchor links unchanged
-  if (
-    href.startsWith('http://') ||
-    href.startsWith('https://') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('tel:') ||
-    href.startsWith('#')
-  ) {
-    return href;
-  }
-
-  const base = import.meta.env.BASE_URL;
-
-  // Already includes base? Pass through
-  if (href.startsWith(base) && base !== '/') {
-    return href;
-  }
-
-  // Normalize: ensure href starts with /
-  const normalizedHref = href.startsWith('/') ? href : '/' + href;
-
-  // Concatenate base + href, removing double slashes
-  if (base.endsWith('/')) {
-    return base + normalizedHref.slice(1);
-  }
-
-  return base + normalizedHref;
-}
-
-const resolved = resolveUrl(href);
 ---
 
-<a href={resolved} class={className} target={target} rel={rel} title={title}>
+<a href={href} class={className} target={target} rel={rel} title={title}>
   <slot />
 </a>
