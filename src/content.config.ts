@@ -7,7 +7,7 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     client: z.string(),
-    year: z.string().nullable().optional(),
+    year: z.number().nullable().optional(),
     category: z.string().nullable().optional(),
     status: z.enum(['active', 'archive', 'draft']).default('active'),
     featured: z.boolean().default(false),
@@ -17,11 +17,10 @@ const projects = defineCollection({
     slides: z.array(
       z.object({
         type: z.enum(['image', 'video']),
-        imageFile: z.string().nullable().optional(),
-        videoUrl: z.string().nullable().optional(),
-        poster: z.string().nullable().optional(),
+        src: z.string(),
         caption: z.string().nullable().optional(),
         alt: z.string().nullable().optional(),
+        poster: z.string().nullable().optional(),
         autoplay: z.boolean().default(false),
       })
     ).optional().default([]),

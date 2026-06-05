@@ -15,9 +15,10 @@ const slug = project.id;
 // Eagerly import all project images so Astro can optimize them at build time
 const allImages = import.meta.glob('/src/content/projects/**/*', { eager: true });
 
-function resolveImageModule(path: string | null | undefined) {
-  if (!path) return null;
-  const mod = allImages[path] as any;
+function resolveImageModule(projectId: string, src: string) {
+  const cleanSrc = src.replace(/^\.\//, '');
+  const absolutePath = `/src/content/projects/${projectId}/${cleanSrc}`;
+  const mod = allImages[absolutePath] as any;
   return mod?.default ?? null;
 }
 
@@ -38,7 +39,7 @@ const slideData = await Promise.all(
     const caption = `${count}<br>${escapeHtml(cap)}`;
 
     if (slide.type === 'image') {
-      const imgMod = resolveImageModule(slide.imageFile);
+      const imgMod = resolveImageModule(slug, slide.src);
       return {
         type: 'image' as const,
         slide,
@@ -48,7 +49,7 @@ const slideData = await Promise.all(
     }
 
     // video
-    const posterMod = resolveImageModule(slide.poster);
+    const posterMod = slide.poster ? resolveImageModule(slug, slide.poster) : null;
     const posterOptimized = posterMod
       ? await getImage({ src: posterMod, width: 1200 })
       : null;
@@ -89,7 +90,7 @@ const initialCaption = slideData[0]?.caption || '';
                 disablepictureinpicture
                 controlslist="nodownload"
               >
-                <source src={data.slide.videoUrl} type="video/mp4" />
+                <source src={data.slide.src} type="video/mp4" />
                 Your browser doesn't support HTML5 video.
               </video>
               {!data.slide.autoplay && (
