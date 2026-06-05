@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
 import PageLayout from '../../layouts/PageLayout.astro';
 
 export async function getStaticPaths() {
@@ -14,11 +15,12 @@ const { project } = Astro.props;
 const { title, client, year, description, url, slides } = project.data;
 const slug = project.id;
 
-function resolveAssetPath(src: string): string {
-  if (src.startsWith('http') || src.startsWith('/')) {
-    return src;
-  }
-  return `/projects/${slug}/${src}`;
+const allImages = import.meta.glob('/src/content/projects/**/*', { eager: true });
+
+function resolveImageModule(path: string | null | undefined) {
+  if (!path) return null;
+  const mod = allImages[path] as any;
+  return mod?.default ?? null;
 }
 
 function escapeHtml(str: string): string {
@@ -30,13 +32,36 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
-const captions = slides.map((slide, i) => {
-  const count = `${i + 1} / ${slides.length}`;
-  const cap = slide.caption || '\u00A0';
-  return `${count}<br>${escapeHtml(cap)}`;
-});
+const slideData = await Promise.all(
+  slides.map(async (slide, i) => {
+    const count = `${i + 1} / ${slides.length}`;
+    const cap = slide.caption || '\u00A0';
+    const caption = `${count}<br>${escapeHtml(cap)}`;
 
-const initialCaption = captions[0] || '';
+    if (slide.type === 'image') {
+      const imgMod = resolveImageModule(slide.imageFile);
+      return {
+        type: 'image' as const,
+        slide,
+        caption,
+        imgMod,
+      };
+    }
+
+    const posterMod = resolveImageModule(slide.poster);
+    const posterOptimized = posterMod
+      ? await getImage({ src: posterMod, width: 1200 })
+      : null;
+    return {
+      type: 'video' as const,
+      slide,
+      caption,
+      posterUrl: posterOptimized?.src ?? null,
+    };
+  })
+);
+
+const initialCaption = slideData[0]?.caption || '';
 ---
 
 <PageLayout
@@ -63,32 +88,32 @@ const initialCaption = captions[0] || '';
 
       <div class="slider" data-project="0" id={`slider--${slug}`}>
         <div class="slider__slides">
-          {slides.map((slide, i) => (
+          {slideData.map((data, i) => (
             <div
-              data-caption={captions[i]}
+              data-caption={data.caption}
               data-slide={i}
               data-project="0"
               class={`slider__slide${i === 0 ? ' slider__slide--active' : ''}`}
             >
-              {slide.type === 'video' ? (
+              {data.type === 'video' ? (
                 <div
-                  class={`video-player slider__image lazy${slide.autoplay ? '' : ' videowithcontrols'} media-landscape`}
+                  class={`video-player slider__image lazy${data.slide.autoplay ? '' : ' videowithcontrols'} media-landscape`}
                   id={`video_${slug}_${i}`}
                 >
                   <video
-                    class="video-player"
-                    poster={slide.poster ? resolveAssetPath(slide.poster) : undefined}
-                    data-autoplay={String(slide.autoplay ?? false)}
-                    muted={slide.autoplay ? true : undefined}
-                    loop={slide.autoplay ? true : undefined}
+                    class="video-player lazy"
+                    poster={data.posterUrl || undefined}
+                    data-autoplay={String(data.slide.autoplay ?? false)}
+                    muted={data.slide.autoplay ? true : undefined}
+                    loop={data.slide.autoplay ? true : undefined}
                     playsinline
                     disablepictureinpicture
                     controlslist="nodownload"
                   >
-                    <source src={slide.src} type="video/mp4" />
+                    <source src={data.slide.videoUrl} type="video/mp4" />
                     Your browser doesn't support HTML5 video.
                   </video>
-                  {!slide.autoplay && (
+                  {!data.slide.autoplay && (
                     <div class="big-play-button">
                       <svg class="big-play-button-icon" viewBox="0 0 100 100">
                         <use xlink:href="#svg_playCircle" />
@@ -96,12 +121,23 @@ const initialCaption = captions[0] || '';
                     </div>
                   )}
                 </div>
+              ) : data.imgMod ? (
+                <div class="image-wrapper media-landscape">
+                  <Image
+                    src={data.imgMod}
+                    alt={data.slide.alt || ''}
+                    widths={[400, 800, 1200, 1600, 2000]}
+                    sizes="100vw"
+                    class="slider__image"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
               ) : (
                 <div class="image-wrapper media-landscape">
                   <img
-                    class="slider__image lazy"
-                    data-src={resolveAssetPath(slide.src)}
-                    alt={slide.alt || ''}
+                    class="slider__image"
+                    src=""
+                    alt={data.slide.alt || ''}
                   />
                 </div>
               )}
@@ -137,7 +173,7 @@ const initialCaption = captions[0] || '';
     VideoHandler.init();
 
     new LazyLoad({
-      elements_selector: 'img.lazy, video.lazy'
+      elements_selector: 'video.lazy'
     });
   </script>
 </PageLayout>

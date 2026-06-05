@@ -1,0 +1,7 @@
+[
+  { "label": "Music", "value": "music" },
+  { "label": "Branding", "value": "branding" },
+  { "label": "Spatial", "value": "spatial" },
+  { "label": "Editorial", "value": "editorial" },
+  { "label": "Packaging", "value": "packaging" }
+]

@@ -3,11 +3,11 @@ import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const projects = defineCollection({
-  loader: glob({ pattern: '[^_]*.{md,mdoc}', base: './src/content/projects' }),
+  loader: glob({ pattern: '**/index.{md,mdoc}', base: './src/content/projects' }),
   schema: z.object({
     title: z.string(),
     client: z.string(),
-    year: z.number().nullable().optional(),
+    year: z.string().nullable().optional(),
     category: z.string().nullable().optional(),
     status: z.enum(['active', 'archive', 'draft']).default('active'),
     featured: z.boolean().default(false),
@@ -17,11 +17,12 @@ const projects = defineCollection({
     slides: z.array(
       z.object({
         type: z.enum(['image', 'video']),
-        src: z.string(),
+        imageFile: z.string().nullable().optional(),
+        videoUrl: z.string().nullable().optional(),
+        poster: z.string().nullable().optional(),
         caption: z.string().nullable().optional(),
         alt: z.string().nullable().optional(),
-        poster: z.string().nullable().optional(),
-        autoplay: z.boolean().nullable().optional(),
+        autoplay: z.boolean().default(false),
       })
     ).optional().default([]),
   }),

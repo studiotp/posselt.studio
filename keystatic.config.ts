@@ -1,4 +1,12 @@
 import { config, fields, collection } from '@keystatic/core';
+import categories from './src/data/categories.json';
+import clients from './src/data/clients.json';
+
+const currentYear = String(new Date().getFullYear());
+const yearOptions = Array.from({ length: 41 }, (_, i) => {
+  const year = 2010 + i;
+  return { label: String(year), value: String(year) };
+});
 
 export default config({
   storage: {
@@ -8,20 +16,26 @@ export default config({
     projects: collection({
       label: 'Projects',
       slugField: 'title',
-      path: 'src/content/projects/*',
+      path: 'src/content/projects/*/',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({
-          name: { label: 'Title' },
+          name: { label: 'Title', validation: { isRequired: true } },
         }),
-        client: fields.text({ label: 'Client' }),
-        year: fields.integer({
+        client: fields.select({
+          label: 'Client',
+          options: clients.length > 0 ? clients : [{ label: 'No clients yet', value: '' }],
+          defaultValue: clients.length > 0 ? clients[0].value : '',
+        }),
+        year: fields.select({
           label: 'Year',
-          validation: { isRequired: false },
+          options: yearOptions,
+          defaultValue: currentYear,
         }),
-        category: fields.text({
+        category: fields.select({
           label: 'Category',
-          validation: { isRequired: false },
+          options: categories,
+          defaultValue: 'music',
         }),
         status: fields.select({
           label: 'Status',
@@ -47,30 +61,41 @@ export default config({
         }),
         thumbnail: fields.image({
           label: 'Thumbnail',
-          directory: 'src/assets/projects',
-          publicPath: '/src/assets/projects/',
+          directory: 'src/content/projects',
+          publicPath: '/src/content/projects/',
         }),
         slides: fields.array(
           fields.object({
             type: fields.select({
-              label: 'Type',
+              label: 'Slide type',
               options: [
                 { label: 'Image', value: 'image' },
                 { label: 'Video', value: 'video' },
               ],
               defaultValue: 'image',
             }),
-            src: fields.text({ label: 'Source (filename or URL)' }),
+            imageFile: fields.image({
+              label: 'Image file',
+              directory: 'src/content/projects',
+              publicPath: '/src/content/projects/',
+              validation: { isRequired: false },
+            }),
+            videoUrl: fields.url({
+              label: 'Video URL (Vimeo MP4)',
+              validation: { isRequired: false },
+            }),
+            poster: fields.image({
+              label: 'Video poster image',
+              directory: 'src/content/projects',
+              publicPath: '/src/content/projects/',
+              validation: { isRequired: false },
+            }),
             caption: fields.text({
               label: 'Caption',
               validation: { isRequired: false },
             }),
             alt: fields.text({
               label: 'Alt text',
-              validation: { isRequired: false },
-            }),
-            poster: fields.text({
-              label: 'Video poster (filename)',
               validation: { isRequired: false },
             }),
             autoplay: fields.checkbox({
@@ -80,7 +105,19 @@ export default config({
           }),
           {
             label: 'Slides',
-            itemLabel: (props) => props.fields.caption.value || props.fields.src.value || 'Slide',
+            itemLabel: (props) => {
+              const type = props.fields.type.value;
+              const caption = props.fields.caption.value;
+              if (caption) return `${type}: ${caption}`;
+
+              if (type === 'image') {
+                const path = props.fields.imageFile.value;
+                const filename = path ? path.split('/').pop() : '';
+                return filename ? `image: ${filename}` : 'image slide';
+              }
+
+              return `${type} slide`;
+            },
           }
         ),
         content: fields.markdoc({
