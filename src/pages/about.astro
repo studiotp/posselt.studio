@@ -57,9 +57,9 @@ const internshipHtml = await marked(data.sidebar.internships.text);
                 <p set:html={marked(data.footer.contact.address.replace(/\n/g, '  \n'))}></p>
                 <p>
                     {data.footer.contact.email}<br>
-                    <a href={data.footer.contact.mapsUrl} target="_blank" rel="noopener">Maps</a>
+                    <a href={data.footer.contact.mapsUrl} target="_blank" rel="noopener"></a>
                 </p>
-                <p>on <a href={data.footer.contact.instagramUrl} target="_blank" rel="noopener">Instagram</a></p>
+                <p><a href={data.footer.contact.instagramUrl} target="_blank" rel="noopener">Instagram</a></p>
             </div>
 
             <div class="lg:w-3/12 column">

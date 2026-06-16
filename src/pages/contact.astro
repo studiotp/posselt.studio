@@ -21,7 +21,7 @@ import data from '../data/contact.json';
         <div class="md:flex pb-3">
             <div class="lg:w-7/12 text-lg md:text-xl text leading-large">
                 <p set:html={marked(data.address.replace(/\n/g, '  \n'))}></p>
-                <p><a href={data.mapsUrl} target="_blank" rel="noopener">Maps</a></p>
+                <p><a href={data.mapsUrl} target="_blank" rel="noopener"></a></p>
             </div>
         </div>
 
