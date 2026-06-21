@@ -2,11 +2,43 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectSlider from '../components/projects/ProjectSlider.astro';
+import { readFileSync } from 'fs';
+import { parse as parseYaml } from 'yaml';
+import { join } from 'path';
 
 const allProjects = await getCollection('projects');
+
+// Load custom project order from config file
+let projectOrder: string[] = [];
+try {
+  const configPath = join(process.cwd(), 'src/config/projects-order.yaml');
+  const configContent = readFileSync(configPath, 'utf-8');
+  const config = parseYaml(configContent);
+  projectOrder = config.order || [];
+} catch (e) {
+  console.warn('Could not load projects-order.yaml, falling back to alphabetical order');
+}
+
+// Create a map for quick lookup of order index
+const orderIndexMap = new Map(projectOrder.map((slug, index) => [slug, index]));
+
 const activeProjects = allProjects
   .filter((p) => p.data.status === 'active')
-  .sort((a, b) => a.id.localeCompare(b.id));
+  .sort((a, b) => {
+    const indexA = orderIndexMap.get(a.id);
+    const indexB = orderIndexMap.get(b.id);
+    
+    // Both projects have explicit order
+    if (indexA !== undefined && indexB !== undefined) {
+      return indexA - indexB;
+    }
+    // Only A has explicit order - comes first
+    if (indexA !== undefined) return -1;
+    // Only B has explicit order - comes first
+    if (indexB !== undefined) return 1;
+    // Neither has explicit order - alphabetical fallback
+    return a.id.localeCompare(b.id);
+  });
 ---
 
 <BaseLayout

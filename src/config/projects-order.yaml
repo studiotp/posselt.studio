@@ -1,0 +1,7 @@
+# Project ordering configuration
+# List project slugs in the desired order of appearance
+# Projects not listed here will appear at the end in alphabetical order
+
+order:
+  - project-test
+  - tsourekia
