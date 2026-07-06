@@ -67,6 +67,16 @@ const initialCaption = slideData[0]?.caption || '';
 
 <li class="projects__item" id={slug}>
   <div class="slider" data-project={index}>
+    <div class="slider__footer">
+      <div class="slider__caption">
+        <h2>{client} — {title} -- </h2>
+        {url && (
+          <> — <a href={url} target="_blank" rel="noopener">{url}</a></>
+        )}
+        <span class="slide-caption" set:html={initialCaption} />
+      </div>
+    </div>
+
     <div class="slider__slides">
       {slideData.map((data, i) => (
         <div
@@ -125,14 +135,14 @@ const initialCaption = slideData[0]?.caption || '';
       ))}
     </div>
 
-    <div class="slider__footer">
-      <div class="slider__caption">
-        <h2>{client} — {title}</h2>
-        {url && (
-          <> — <a href={url} target="_blank" rel="noopener">{url}</a></>
-        )}
-        <span class="slide-caption" set:html={initialCaption} />
-      </div>
-    </div>
+    <!-- <div class="slider__footer"> -->
+    <!--   <div class="slider__caption"> -->
+    <!--     <h2>{client} — {title}</h2> -->
+    <!--     {url && ( -->
+    <!--       <> — <a href={url} target="_blank" rel="noopener">{url}</a></> -->
+    <!--     )} -->
+    <!--     <span class="slide-caption" set:html={initialCaption} /> -->
+    <!--   </div> -->
+    <!-- </div> -->
   </div>
 </li>
