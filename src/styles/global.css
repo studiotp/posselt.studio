@@ -549,7 +549,7 @@
 .slider__slides {
   position: relative;
   display: inline-grid;
-  align-items: center;
+  align-items: start;
   cursor: url('../assets/custom_cursor.svg') 21 20, auto;
 }
 
@@ -564,6 +564,7 @@
   z-index: 0;
   display: inline-flex;
   align-items: center;
+  height: auto;
 }
 
 .slider__slide--active {
@@ -587,7 +588,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
   gap: 1.5rem;
 }
 

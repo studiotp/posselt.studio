@@ -8,7 +8,7 @@ export interface Props {
 }
 
 const { project, index } = Astro.props;
-const { title, client, url } = project.data;
+const { title, client, url, url_alias } = project.data;
 const slides = project.data.slides;
 const slug = project.id;
 
@@ -70,10 +70,12 @@ const initialCaption = slideData[0]?.caption || '';
     <div class="slider__footer">
       <div class="slider__caption">
         <h2>{client} — {title} -- </h2>
-        {url && (
-          <> — <a href={url} target="_blank" rel="noopener">{url}</a></>
+                <span class="slide-caption" set:html={initialCaption} />
+          {url && (
+            <br/>
+          <a href={url} target="_blank" rel="noopener" style="text-decoration: underline;">{url_alias ? url_alias : url}</a>
         )}
-        <span class="slide-caption" set:html={initialCaption} />
+
       </div>
     </div>
 
@@ -134,15 +136,5 @@ const initialCaption = slideData[0]?.caption || '';
         </div>
       ))}
     </div>
-
-    <!-- <div class="slider__footer"> -->
-    <!--   <div class="slider__caption"> -->
-    <!--     <h2>{client} — {title}</h2> -->
-    <!--     {url && ( -->
-    <!--       <> — <a href={url} target="_blank" rel="noopener">{url}</a></> -->
-    <!--     )} -->
-    <!--     <span class="slide-caption" set:html={initialCaption} /> -->
-    <!--   </div> -->
-    <!-- </div> -->
-  </div>
+     </div>
 </li>
