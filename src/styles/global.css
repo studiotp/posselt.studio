@@ -572,15 +572,24 @@
   z-index: 1;
 }
 
-.slider__slide img,
-.slider__slide video {
-  max-height: 75vh;
-  width: auto;
-  max-width: 100%;
-  display: block;
+/* Keep media wrappers from stretching as flex items (Safari). */
+.slider__slide > .image-wrapper,
+.slider__slide > .video-player {
+  flex: 0 1 auto;
+  align-self: center;
+  min-width: 0;
+  min-height: 0;
 }
 
+.slider__slide img,
 .slider__slide video {
+  /* Intrinsic sizing + max constraints. Avoid width:100% with max-height —
+     Safari stretches the image instead of preserving aspect ratio. */
+  max-height: 75vh;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  display: block;
   object-fit: contain;
 }
 
@@ -880,12 +889,20 @@ body.error404 .menu {
 .image-wrapper {
   position: relative;
   background-color: #dbddd8;
+  /* Shrink-wrap to the image so flex/grid parents don't invent a stretched box (Safari). */
+  width: fit-content;
+  max-width: 100%;
+  max-height: 75vh;
+  line-height: 0;
 }
 
 .image-wrapper img.slider__image {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
+  max-height: 75vh;
   display: block;
+  object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
 }
 
